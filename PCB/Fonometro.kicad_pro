@@ -48,8 +48,27 @@
           "min_clearance": 0.508
         }
       },
-      "diff_pair_dimensions": [],
-      "drc_exclusions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
+      "drc_exclusions": [
+        "courtyards_overlap|138200001|104360001|f8cabefd-e45b-4e14-af62-66ee31955ce5|89c063a6-d885-49f4-98cf-49f9c8d214b9",
+        "courtyards_overlap|138200001|80230001|f8cabefd-e45b-4e14-af62-66ee31955ce5|d4ca41e0-3bb7-44f8-a6cc-09999082e792",
+        "courtyards_overlap|138200001|92930001|f8cabefd-e45b-4e14-af62-66ee31955ce5|44e26977-f8a2-420a-bf09-59828774f9c1",
+        "courtyards_overlap|143280001|104360001|f8cabefd-e45b-4e14-af62-66ee31955ce5|b664b754-6069-40b6-b3a1-798baae55aeb",
+        "courtyards_overlap|148360001|104360001|f8cabefd-e45b-4e14-af62-66ee31955ce5|28951d38-d6a8-4fe7-ae55-fd4ac4d83bc6",
+        "courtyards_overlap|148360001|75150001|f8cabefd-e45b-4e14-af62-66ee31955ce5|4bcada71-8ffa-4f9d-94c1-e563c5667c0a",
+        "courtyards_overlap|150889999|60880001|4b8856ad-4f0f-43af-9f08-03469c495cfa|6fac378b-f7e6-479d-b406-028f75450e35",
+        "courtyards_overlap|151459999|71049001|f8cabefd-e45b-4e14-af62-66ee31955ce5|6fac378b-f7e6-479d-b406-028f75450e35",
+        "courtyards_overlap|153340001|74850001|f8cabefd-e45b-4e14-af62-66ee31955ce5|de78d66b-21ff-49c4-a034-4026c564b64e",
+        "courtyards_overlap|153440001|104360001|f8cabefd-e45b-4e14-af62-66ee31955ce5|dea9d349-6cb2-4384-9e4b-b20fab275289",
+        "courtyards_overlap|158420001|60880001|45351bc3-3111-41ee-be8c-7fe7e22cc370|66ba2ffc-e4d0-421e-a9e6-d05e859adf2c",
+        "courtyards_overlap|161619999|71049001|f8cabefd-e45b-4e14-af62-66ee31955ce5|66ba2ffc-e4d0-421e-a9e6-d05e859adf2c"
+      ],
       "meta": {
         "version": 2
       },
@@ -112,8 +131,20 @@
         "solder_mask_min_width": 0.0,
         "use_height_for_length_calcs": true
       },
-      "track_widths": [],
-      "via_dimensions": [],
+      "track_widths": [
+        0.0,
+        0.254,
+        0.508,
+        1.016,
+        1.524,
+        2.032
+      ],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false,
       "zones_use_no_outline": true
     },
@@ -367,7 +398,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "C:/Users/lozio/Desktop/tmp/Fonometro.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
