@@ -11,21 +11,28 @@ inline void setup_wifi(), spawn_threads();
 void thread_1(void*);
 TaskHandle_t thread_1_handle;
 
+void loop(){}
 void setup(){
 	Serial.begin(115200);
-	
+
 	// setup_wifi();
 	spawn_threads();
 }
 
-void loop(){}
-
 void thread_1(void *parameters){
-	int cont = 0;
+	// f = 1 / (SAMPLES_LEN * DELAY)
+	// f = 1 / (50 * 0.001)
+
+	const uint16_t SAMPLES_LEN = 50;
+	const uint8_t SAMPLES[] = { 100, 112, 124, 136, 148, 158, 168, 177, 184, 190, 195, 198, 199, 199, 198, 195, 190, 184, 177, 168, 158, 148, 136, 124, 112, 100, 87, 75, 63, 51, 41, 31, 22, 15, 9, 4, 1, 0, 0, 1, 4, 9, 15, 22, 31, 41, 51, 63, 75, 87 };
 
 	while(true){
-		Serial.println(cont++);
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
+		for(int i=0; i<SAMPLES_LEN; i++){
+			dacWrite(DAC1, SAMPLES[i]);
+			delayMicroseconds(100);
+
+			// vTaskDelay(1 / portTICK_PERIOD_MS);
+		}
 	}
 }
 
