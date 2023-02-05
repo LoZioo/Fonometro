@@ -1,3 +1,6 @@
+# Gerber zip
+*.zip
+
 # Temporary files
 *.000
 *.bak
