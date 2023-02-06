@@ -71,16 +71,15 @@ inline void spawn_threads(){
 			Core where the task should run.
 	*/
 
-	xTaskCreatePinnedToCore(sample_thread,	"sample_thread",	1024,	NULL,	2,	&sample_thread_handle,	APP_CPU);
-	xTaskCreatePinnedToCore(main_thread,		"main_thread",		1024,	NULL,	1,	&main_thread_handle,		APP_CPU);
+	xTaskCreatePinnedToCore(sample_thread,	"sample_thread",	10240,	NULL,	1,	&sample_thread_handle,	APP_CPU);
+	xTaskCreatePinnedToCore(main_thread,		"main_thread",		10240,	NULL,	1,	&main_thread_handle,		PRO_CPU);
 
 	// Deleting the spawner thread (setup thread).
 	vTaskDelete(NULL);
 }
 
-void sample_thread(void *parameters){
+void IRAM_ATTR sample_thread(void *parameters){
 	Serial.println("sample_thread");
-	// vTaskDelay(3000 / portTICK_PERIOD_MS);
 
 	// Start sampling from MIC_SUM pin.
 	start_timer(timer0);
@@ -88,7 +87,7 @@ void sample_thread(void *parameters){
 	while(true){
 		// Wait for the call of xSemaphoreGiveFromISR from timer0_OVF_ISR.
 		xSemaphoreTake(sem_ready_for_sampling, portMAX_DELAY);
-		samples[sample_index++] = 0;
+		samples[sample_index++] = analogRead(MIC_SUM);
 
 		if(sample_index == SAMPLES_LEN){
 			// sample_thread will be locked at the next loop.
