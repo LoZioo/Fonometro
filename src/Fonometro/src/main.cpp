@@ -3,15 +3,7 @@
 
 #include <password.h>
 #include <const.h>
-
-// Setup routines.
-inline void setup_GPIOs(), setup_wifi(), spawn_threads(), setup_timers();
-
-// ISR.
-void IRAM_ATTR timer0_OVF_ISR(), timer1_OVF_ISR();
-
-// Macros.
-inline void start_timer(hw_timer_t*), stop_timer(hw_timer_t*);
+#include <proc.h>
 
 // Hardware timers.
 hw_timer_t *timer0, *timer1;
@@ -98,9 +90,6 @@ void IRAM_ATTR timer0_OVF_ISR(){
 
 // Sinewave generator.
 volatile uint16_t k = 0;
-
-const uint16_t SAMPLES_LEN = 40;
-const uint8_t SAMPLES[] = { 127, 138, 150, 161, 171, 180, 187, 193, 198, 201, 202, 201, 198, 193, 187, 180, 171, 161, 150, 138, 127, 115, 103, 92, 82, 73, 66, 60, 55, 52, 52, 52, 55, 60, 66, 73, 82, 92, 103, 115 };
 
 void IRAM_ATTR timer1_OVF_ISR(){
 	if(k == SAMPLES_LEN)
