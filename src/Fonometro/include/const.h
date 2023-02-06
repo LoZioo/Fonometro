@@ -15,6 +15,10 @@
 #define PRO_CPU 0
 #define APP_CPU 1
 
+// Sampling timer parameters.
+#define TIMER0_PRE	2000		// 80.000.000Hz / 2000 = 40.000Hz = 40 * 1.000Hz
+#define TIMER0_ARR	1
+
 // Sinewave timer parameters for the signal generator (DAC).
-#define PRESCALER		2000		// 80.000.000Hz / 2000 = 40.000Hz = 40 * 1.000Hz
-#define AUTORELOAD	1
+#define TIMER1_PRE	2000		// 80.000.000Hz / 2000 = 40.000Hz = 40 * 1.000Hz
+#define TIMER1_ARR	1
