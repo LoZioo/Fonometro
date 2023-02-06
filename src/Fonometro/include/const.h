@@ -18,12 +18,12 @@
 #define PRO_CPU 0
 #define APP_CPU 1
 
-// Sampling timer parameters (20kHz).
-#define TIMER0_PRE	4000		// 80.000.000Hz / 4000 = 20.000Hz
+// Sampling timer parameters (16kHz).
+#define TIMER0_PRE	5000		// 80.000.000Hz / 5000 = 16.000Hz
 #define TIMER0_ARR	1
 
-// The RAM requirements are: 2 byte/sample * SAMPLING_FREQ * SAMPLING_DURATION_S = 40kB
-#define SAMPLING_FREQ					20000
+// The RAM requirements are: 2 byte/sample * SAMPLING_FREQ * SAMPLING_DURATION_S = 32kB
+#define SAMPLING_FREQ					16000
 #define SAMPLING_DURATION_S		1
 #define SAMPLES_LEN						SAMPLING_FREQ * SAMPLING_DURATION_S
 
