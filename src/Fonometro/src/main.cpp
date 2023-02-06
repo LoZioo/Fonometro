@@ -26,11 +26,11 @@ void setup(){
 
 	setup_GPIOs();
 	// setup_wifi();
-	
-	setup_timers();
-	start_timer(timer0);
 
-	spawn_threads();
+	setup_timers();
+	start_timer(timer1);
+
+	// spawn_threads();
 }
 
 void sample_thread(void *parameters){
@@ -74,9 +74,9 @@ inline void spawn_threads(){
 }
 
 inline void setup_timers(){
-	timer0 = timerBegin(1, TIMER0_PRE, true);
-	timerAlarmWrite(timer1, TIMER0_ARR, true);
-	timerAttachInterrupt(timer1, &timer0_OVF_ISR, true);
+	timer0 = timerBegin(0, TIMER0_PRE, true);
+	timerAlarmWrite(timer0, TIMER0_ARR, true);
+	timerAttachInterrupt(timer0, &timer0_OVF_ISR, true);
 
 	timer1 = timerBegin(1, TIMER1_PRE, true);
 	timerAlarmWrite(timer1, TIMER1_ARR, true);
@@ -94,7 +94,6 @@ inline void stop_timer(hw_timer_t *timer){
 
 // Sampling timer.
 void IRAM_ATTR timer0_OVF_ISR(){
-
 }
 
 // Sinewave generator.
