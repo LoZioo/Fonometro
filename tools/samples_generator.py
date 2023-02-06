@@ -23,8 +23,9 @@ def main() -> None:
 	print("Amp-PP: %d" % AMP_PP)
 
 	print()
-	print("const uint16_t SAMPLES_LEN = %d;" % len(samples))
-	print("const uint8_t SAMPLES[] = %s;" % str(samples).replace("[", "{ ").replace("]", " }"))
+	# print("const uint16_t DAC_SAMPLES_LEN = %d;" % len(samples))
+	print("#define DAC_SAMPLES_LEN %d" % len(samples))
+	print("const uint8_t DAC_SAMPLES[] = %s;" % str(samples).replace("[", "{ ").replace("]", " }"))
 
 	# plt.title("Samples")
 	# plt.xlabel("n")
