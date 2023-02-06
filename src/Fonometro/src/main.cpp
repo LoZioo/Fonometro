@@ -8,9 +8,17 @@
 // Hardware timers.
 hw_timer_t *timer0, *timer1;
 
-// Threads and IPC.
-void sample_thread(void*);
-TaskHandle_t sample_thread_handle;
+// Threads.
+void sample_thread(void*), main_thread(void*);
+TaskHandle_t sample_thread_handle, main_thread_handle;
+
+// Semaphores.
+SemaphoreHandle_t sem_ready_for_sampling = NULL;
+SemaphoreHandle_t sem_done_sampling = NULL;
+
+// Variables.
+uint16_t samples[SAMPLES_LEN];
+uint32_t sample_index = 0;
 
 void loop(){}
 void setup(){
@@ -20,14 +28,10 @@ void setup(){
 	// setup_wifi();
 
 	setup_timers();
-	start_timer(timer1);
+	// start_timer(timer1);
 
-	// spawn_threads();
-}
-
-void sample_thread(void *parameters){
-	while(true){
-	}
+	setup_IPCs();
+	spawn_threads();
 }
 
 inline void setup_GPIOs(){
@@ -46,6 +50,14 @@ inline void setup_wifi(){
 		delay(500);
 }
 
+inline void setup_IPCs(){
+	// Sampling semaphore.
+	// xSemaphoreCreateBinary initializes to ZERO.
+	// This is fine as it is a binary semaphore.
+	sem_ready_for_sampling = xSemaphoreCreateBinary();
+	sem_done_sampling = xSemaphoreCreateBinary();
+}
+
 // Spawn the needed threads and kill the spawner thread.
 inline void spawn_threads(){
 	/*
@@ -59,10 +71,47 @@ inline void spawn_threads(){
 			Core where the task should run.
 	*/
 
-	xTaskCreatePinnedToCore(sample_thread, "sample_thread", 1024, NULL, 3, &sample_thread_handle, APP_CPU);
+	xTaskCreatePinnedToCore(sample_thread,	"sample_thread",	1024,	NULL,	2,	&sample_thread_handle,	APP_CPU);
+	xTaskCreatePinnedToCore(main_thread,		"main_thread",		1024,	NULL,	1,	&main_thread_handle,		APP_CPU);
 
 	// Deleting the spawner thread (setup thread).
 	vTaskDelete(NULL);
+}
+
+void sample_thread(void *parameters){
+	Serial.println("sample_thread");
+	// vTaskDelay(3000 / portTICK_PERIOD_MS);
+
+	// Start sampling from MIC_SUM pin.
+	start_timer(timer0);
+
+	while(true){
+		// Wait for the call of xSemaphoreGiveFromISR from timer0_OVF_ISR.
+		xSemaphoreTake(sem_ready_for_sampling, portMAX_DELAY);
+		samples[sample_index++] = 0;
+
+		if(sample_index == SAMPLES_LEN){
+			// sample_thread will be locked at the next loop.
+			stop_timer(timer0);
+
+			// Unlock main_thread.
+			xSemaphoreGive(sem_done_sampling);
+			sample_index = 0;
+		}
+	}
+}
+
+void main_thread(void *parameters){
+	Serial.println("main_thread");
+
+	// Wait for the call of xSemaphoreGive from sample_thread.
+	xSemaphoreTake(sem_done_sampling, portMAX_DELAY);
+
+	Serial.println("Done.");
+
+	while(true){
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
 }
 
 inline void setup_timers(){
@@ -86,14 +135,29 @@ inline void stop_timer(hw_timer_t *timer){
 
 // Sampling timer.
 void IRAM_ATTR timer0_OVF_ISR(){
+	BaseType_t task_woken = pdFALSE;
+
+	// Deferred interrupt for sampling.
+	// If sample_thread can't handle the set speed,
+	// this error will be printed out.
+	if(xSemaphoreGiveFromISR(sem_ready_for_sampling, &task_woken) == errQUEUE_FULL)
+		Serial.println("errQUEUE_FULL in xSemaphoreGiveFromISR.");
+  
+	// API to implement deferred interrupt.
+  // Exit from ISR (Vanilla FreeRTOS).
+  // portYIELD_FROM_ISR(task_woken);
+
+  // Exit from ISR (ESP-IDF).
+  if(task_woken)
+    portYIELD_FROM_ISR();
 }
 
 // Sinewave generator.
 volatile uint16_t k = 0;
 
 void IRAM_ATTR timer1_OVF_ISR(){
-	if(k == SAMPLES_LEN)
+	if(k == DAC_SAMPLES_LEN)
 		k = 0;
 
-	dacWrite(DAC1, SAMPLES[k++]);
+	dacWrite(DAC1, DAC_SAMPLES[k++]);
 }
