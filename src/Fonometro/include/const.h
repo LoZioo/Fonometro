@@ -27,10 +27,6 @@
 #define SAMPLING_DURATION_S		1
 #define SAMPLES_LEN						SAMPLING_FREQ * SAMPLING_DURATION_S
 
-
-
-
-
 // Sinewave timer parameters for the signal generator (DAC).
 #define TIMER1_PRE	2000		// 80.000.000Hz / 2000 = 40.000Hz = 40 * 1.000Hz
 #define TIMER1_ARR	1
