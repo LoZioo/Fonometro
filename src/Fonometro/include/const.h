@@ -18,6 +18,20 @@
 #define PRO_CPU 0
 #define APP_CPU 1
 
+// Mic sensitivity (https://www.dsprelated.com/showthread/audiodsp/1153-1.php).
+#define MIC_SENSITIVITY_DB	-50																	// db(V/Pa)
+#define MIC_SENSITIVITY			pow(10, MIC_SENSITIVITY_DB / 20)		// V/Pa
+#define MIN_SOUND_SPL_THR		2e-5																// 20 uPascal
+
+// Amp gain.
+#define AMP_GAIN	9.11
+
+// Conversion factor.
+#define SAMPLE_ADC_VAL_TO_VOLTS		3.3 / 4096
+
+// ADC empyric DC offset.
+#define SAMPLE_SHIFT	1765
+
 // I2S and ADC configurations.
 #define I2S_UNIT					I2S_NUM_0
 
@@ -27,8 +41,8 @@
 #define ADC_DEPTH					I2S_BITS_PER_SAMPLE_16BIT
 
 // Sampling configurations.
-#define	REC_TIME_SEC						1
-#define SAMPLES_TO_READ					REC_TIME_SEC * ADC_SAMPLE_RATE
+#define	REC_TIME_SEC						0.1
+#define SAMPLES_TO_READ					(uint32_t) ceil(REC_TIME_SEC * ADC_SAMPLE_RATE)
 #define SENDING_DATA_PERIOD_MS	500
 
 // I2S configurations.
