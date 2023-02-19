@@ -19,7 +19,7 @@ void loop(){}
 void setup(){
 	Serial.begin(115200);
 
-	setup_GPIOs();
+	setup_gpio();
 	// setup_wifi();
 
 	setup_adc_i2s();
@@ -29,8 +29,12 @@ void setup(){
 void sample_thread(void *parameters){
 	Serial.println("sample_thread");
 
+	uint16_t *samples = new uint16_t[SAMPLES_TO_READ];
+	uint32_t samples_read;
+
 	while(true){
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
+		samples_read = read_adc_i2s_samples(samples, SAMPLES_TO_READ);
+		Serial.println(samples_read);
 	}
 }
 

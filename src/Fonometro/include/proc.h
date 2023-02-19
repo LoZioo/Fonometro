@@ -1,5 +1,5 @@
 // Setup routines.
-inline void setup_GPIOs(){
+inline void setup_gpio(){
 	pinMode(MIC_SUM, INPUT);
 	pinMode(MIC_1, INPUT);
 	pinMode(MIC_2, INPUT);

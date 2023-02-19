@@ -20,10 +20,16 @@
 
 // I2S and ADC configurations.
 #define I2S_UNIT					I2S_NUM_0
+
 #define ADC_UNIT					ADC_UNIT_1
 #define ADC_CHANNEL				ADC1_CHANNEL_4		// MIC_SUM, GPIO32.
 #define ADC_SAMPLE_RATE		44100
 #define ADC_DEPTH					I2S_BITS_PER_SAMPLE_16BIT
+
+// Sampling configurations.
+#define	REC_TIME_SEC						1
+#define SAMPLES_TO_READ					REC_TIME_SEC * ADC_SAMPLE_RATE
+#define SENDING_DATA_PERIOD_MS	500
 
 // I2S configurations.
 i2s_config_t adc_i2s_config = {
