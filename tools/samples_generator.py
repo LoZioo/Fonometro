@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 
 # Usage: python samples_generator.py SAMPLES_NUM AMP
 def main() -> None:
-	assert len(sys.argv) == 3
-
 	try:
 		SAMPLES_NUM = int(sys.argv[1])
 		AMP = int(sys.argv[2])
