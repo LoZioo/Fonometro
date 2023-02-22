@@ -37,7 +37,7 @@ void sample_thread(void *parameters){
 	while(true){
 		samples_len = read_adc_i2s_samples(samples, SAMPLES_TO_READ);
 
-		uint64_t dc_offset = 0;
+		uint64_t dc_offset = 0;		// A mean.
 		for(int i=0; i<samples_len; i++){
 			samples[i] &= 0x0FFF;
 			dc_offset += samples[i];
@@ -50,17 +50,23 @@ void sample_thread(void *parameters){
 			adc_voltages[i] = samples[i] * SAMPLE_ADC_VAL_TO_VOLTS;
 			adc_voltage_rms += pow(adc_voltages[i], 2);
 		}
-		// ??? Valore da verificare.
+
 		adc_voltage_rms = sqrt(adc_voltage_rms / samples_len);
 		
 		float mic_voltage_rms = adc_voltage_rms / PREAMP_GAIN;
-		float db_spl = 20 * log10(mic_voltage_rms / (MIC_SENSITIVITY * MIN_SOUND_SPL_THR));
+		float db_spl = 20 * log10(mic_voltage_rms / MIC_DB_SPL_CONVERSION);
 
 		Serial.printf("dc_offset: %d\n", dc_offset);
-		Serial.printf("adc_voltage_rms: %f\n", adc_voltage_rms);
-		Serial.printf("mic_voltage_rms: %f\n", mic_voltage_rms);
+		Serial.printf("adc_voltage_rms_mV: %f\n", adc_voltage_rms * 1000);
+		Serial.printf("mic_voltage_rms_mV: %f\n", mic_voltage_rms * 1000);
 		Serial.printf("db_spl: %f\n", db_spl);
 		Serial.println();
+
+		// 39mV = 81dB
+		// dc_offset: 1681
+		// adc_voltage_rms_mV: 398.343597
+		// mic_voltage_rms_mV: 43.298218
+		// db_spl: 106.708801
 
 		// for(int i=0; i<10; i++)
 		// 	Serial.printf("samples[%d] = %d\n", i, samples[i]);
