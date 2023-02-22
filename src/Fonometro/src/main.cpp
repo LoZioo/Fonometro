@@ -28,30 +28,38 @@ void setup(){
 
 void sample_thread(void *parameters){
 	Serial.println("sample_thread");
-
-	float *adc_voltages = new float[SAMPLES_TO_READ];
+	
+	// Range [-2048, 2047].
+	int16_t *samples = new int16_t[SAMPLES_TO_READ];
+	uint32_t samples_len;
 
 	while(true){
-		int16_t *samples = new int16_t[SAMPLES_TO_READ];
-		uint32_t samples_len;
-
+		// Read samples [0, 4096].
 		samples_len = read_adc_i2s_samples(samples, SAMPLES_TO_READ);
 
 		uint64_t dc_sum = 0;
 		for(int i=0; i<samples_len; i++){
+			// Extract the 12 lower bits.
 			samples[i] &= 0x0FFF;
 			dc_sum += samples[i];
 		}
 
 		uint16_t dc_offset = dc_sum / samples_len;
 		float adc_voltage_rms = 0;
+
 		for(int i=0; i<samples_len; i++){
-			adc_voltages[i] = (samples[i] - dc_offset) * ADC_VAL_TO_VOLTS;
-			adc_voltage_rms += pow(adc_voltages[i], 2);
+			float adc_voltage = (samples[i] - dc_offset) * ADC_VAL_TO_VOLTS;
+			float mic_voltage = adc_voltage / PREAMP_GAIN;
+
+			// Needed for the FFT.
+			// From now, samples contains the SPL values [~ -10, ~ 120].
+			samples[i] = round(20 * log10(mic_voltage / MIC_DB_SPL_CONVERSION));
+
+			// Needed for the other values.
+			adc_voltage_rms += pow(adc_voltage, 2);
 		}
 
-		delete[] samples;
-
+		// Aggregate data.
 		adc_voltage_rms = sqrt(adc_voltage_rms / samples_len);
 		float mic_voltage_rms = adc_voltage_rms / PREAMP_GAIN;
 		int16_t db_spl = round(20 * log10(mic_voltage_rms / MIC_DB_SPL_CONVERSION));
