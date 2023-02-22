@@ -41,7 +41,7 @@
 #define ADC_DEPTH					I2S_BITS_PER_SAMPLE_16BIT
 
 // Sampling configurations.
-#define	REC_TIME_SEC						1
+#define	REC_TIME_SEC						2
 #define SAMPLES_TO_READ					(uint32_t) ceil(REC_TIME_SEC * ADC_SAMPLE_RATE)
 #define SENDING_DATA_PERIOD_MS	500
 
