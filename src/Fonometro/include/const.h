@@ -18,6 +18,10 @@
 #define PRO_CPU 0
 #define APP_CPU 1
 
+// Conversion factors.
+#define ADC_VAL_TO_VOLTS	8.056640625e-4	// 3.3V / 4096
+#define PREAMP_GAIN				9.2
+
 // Mic sensitivity (https://www.dsprelated.com/showthread/audiodsp/1153-1.php).
 // Theoretical values.
 // #define MIC_SENSITIVITY_DB		-50												// db(Vrms/Pa)
@@ -27,12 +31,6 @@
 
 // Empyric value: you have to solve "20 * log10(READ_MIC_VOLTAGE_RMS / x) = REAL_DB_VALUE (from another audio meter)".
 #define MIC_DB_SPL_CONVERSION	5.26799e-6		// MIC_SENSITIVITY * MIN_SOUND_SPL_THR
-
-// Amp gain.
-#define PREAMP_GAIN	9.2
-
-// Conversion factor.
-#define SAMPLE_ADC_VAL_TO_VOLTS		3.3 / 4096
 
 // I2S and ADC configurations.
 #define I2S_UNIT					I2S_NUM_0
