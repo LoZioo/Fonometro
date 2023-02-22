@@ -24,7 +24,7 @@
 
 // Mic sensitivity (https://www.dsprelated.com/showthread/audiodsp/1153-1.php).
 // Theoretical values.
-// #define MIC_SENSITIVITY_DB		-50												// db(Vrms/Pa)
+// #define MIC_SENSITIVITY_DB			-50											// db(Vrms/Pa)
 // #define MIC_SENSITIVITY				3.1622776601683793e-3		// pow(10, MIC_SENSITIVITY_DB / 20)			// Vrms/Pa.
 // #define MIN_SOUND_SPL_THR			2e-5										// 20 uPascal
 // #define MIC_DB_SPL_CONVERSION	6.3245553203367586e-8		// MIC_SENSITIVITY * MIN_SOUND_SPL_THR
