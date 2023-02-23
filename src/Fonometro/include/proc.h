@@ -37,7 +37,7 @@ inline void spawn_threads(){
 	*/
 
 	xTaskCreatePinnedToCore(sample_thread,	"sample_thread",	10240,	NULL,	1,	&sample_thread_handle,	APP_CPU);
-	xTaskCreatePinnedToCore(main_thread,		"main_thread",		10240,	NULL,	1,	&main_thread_handle,		PRO_CPU);
+	// xTaskCreatePinnedToCore(main_thread,		"main_thread",		10240,	NULL,	1,	&main_thread_handle,		PRO_CPU);
 
 	// Deleting the spawner thread (setup thread).
 	vTaskDelete(NULL);

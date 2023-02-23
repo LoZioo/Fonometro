@@ -37,13 +37,13 @@
 
 #define ADC_UNIT					ADC_UNIT_1
 #define ADC_CHANNEL				ADC1_CHANNEL_4		// MIC_SUM, GPIO32.
-#define ADC_SAMPLE_RATE		16000
-#define ADC_DEPTH					I2S_BITS_PER_SAMPLE_16BIT
+#define ADC_SAMPLE_RATE		16000							// Be careful: RAM isn't ever enough.
+#define ADC_DEPTH					I2S_BITS_PER_SAMPLE_32BIT
 
 // Sampling configurations.
-#define	REC_TIME_SEC						2
+#define	REC_TIME_SEC						1		// Be careful: RAM isn't ever enough.
 #define SAMPLES_TO_READ					(uint32_t) ceil(REC_TIME_SEC * ADC_SAMPLE_RATE)
-#define SENDING_DATA_PERIOD_MS	500
+#define SENDING_DATA_PERIOD_MS	1
 
 // I2S configurations.
 i2s_config_t adc_i2s_config = {
