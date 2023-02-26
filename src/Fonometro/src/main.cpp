@@ -2,13 +2,10 @@
 #include <WiFi.h>
 
 #include <driver/i2s.h>
-#include <fft.h>
+// #include <fft.h>
 
 #include <password.h>
 #include <const.h>
-
-// Hardware timers.
-hw_timer_t *timer0, *timer1;
 
 // Threads.
 void sample_thread(void*), main_thread(void*);
