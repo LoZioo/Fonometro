@@ -49,6 +49,7 @@ class AudioProcessor {
 		float *buff32_float;			// Intended to save SPL values; use the same allocated memory, but use it as float memory.
 		uint32_t buff32_len;
 
+		AudioProcessor();
 		void __read_adc_i2s_samples();
 
 	public:
