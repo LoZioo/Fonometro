@@ -80,7 +80,7 @@ void AudioProcessor::evaluate(){
 
 		// Needed for the FFT (not implemented).
 		// From now, buff32_float contains the SPL values [20uPa, 30Pa].
-		buff32_float[i] = round(20 * log10(mic_voltage / conf.mic_spl_conversion));
+		// buff32_float[i] = round(20 * log10(mic_voltage / conf.mic_spl_conversion));
 
 		// Needed for the other values.
 		data.adc_voltage_rms += pow(adc_voltage, 2);
