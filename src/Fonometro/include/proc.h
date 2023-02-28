@@ -7,12 +7,49 @@ inline void setup_gpio(){
 	pinMode(MIC_4, INPUT);
 }
 
+// Spawn and handle the captive portal and then reset after the configuration.
+inline void handle_captive_portal(){
+	DNSServer dns;
+	AsyncWebServer server(WIFI_WEBSERVER_PORT);
+
+	dns.start(WIFI_DNS_PORT, "*", WIFI_AP_IP);
+	MDNS.begin(WIFI_AP_NAME);
+	LittleFS.begin();
+
+	server.on("/wifi-set", HTTP_POST, [](AsyncWebServerRequest *req){
+		Serial.printf("SSID: %s\nPassword: %s\n", req->arg("ssid").c_str(), req->arg("pass").c_str());
+		req->redirect("/index.html");
+	});
+
+	server.onNotFound([](AsyncWebServerRequest *req){
+		req->redirect("/index.html");
+	});
+
+	server.serveStatic("/", LittleFS, "/wifi-config/");
+	server.begin();
+
+	while(true)
+		dns.processNextRequest();
+}
+
+// Try to connect to WiFi, otherwise go into access point mode, wait to be configured and then reset.
 inline void setup_wifi(){
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(STA_SSID, STA_PSK);
 
-	while(WiFi.status() != WL_CONNECTED)
-		delay(500);
+	uint8_t attempts = 0;
+	while(WiFi.status() != WL_CONNECTED && attempts < WIFI_STA_CONNECTION_ATTEMPTS){
+		attempts++;
+		delay(1000);
+	}
+
+	if(attempts == WIFI_STA_CONNECTION_ATTEMPTS){
+		WiFi.mode(WIFI_AP);
+		WiFi.softAP(WIFI_AP_NAME);
+		WiFi.softAPConfig(WIFI_AP_IP, WIFI_AP_IP, WIFI_AP_SUBNET);
+
+		handle_captive_portal();
+	}
 }
 
 // Spawn the needed threads and kill the spawner thread.
@@ -28,8 +65,8 @@ inline void spawn_threads(){
 			Core where the task should run.
 	*/
 
-	xTaskCreatePinnedToCore(sample_thread,	"sample_thread",	10240,	NULL,	1,	&sample_thread_handle,	APP_CPU);
-	xTaskCreatePinnedToCore(main_thread,		"main_thread",		10240,	NULL,	1,	&main_thread_handle,		PRO_CPU);
+	xTaskCreatePinnedToCore(sample_thread,		"sample_thread",		10240,	NULL,	1,	&sample_thread_handle,		APP_CPU);
+	xTaskCreatePinnedToCore(webserver_thread,	"webserver_thread",	10240,	NULL,	1,	&webserver_thread_handle,	PRO_CPU);
 
 	// Deleting the spawner thread (setup thread).
 	vTaskDelete(NULL);

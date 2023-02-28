@@ -18,7 +18,17 @@
 #define PRO_CPU 0
 #define APP_CPU 1
 
-// Main thread delay.
+// WiFi configurations.
+#define WIFI_DNS_PORT				53
+#define WIFI_WEBSERVER_PORT	80
+
+#define WIFI_STA_CONNECTION_ATTEMPTS	5
+
+#define WIFI_AP_NAME		"SoundMeter"
+#define WIFI_AP_IP			IPAddress(8, 8, 8, 8)
+#define WIFI_AP_SUBNET	IPAddress(255, 255, 255, 0)
+
+// AudioProcessor configurations.
 #define SENDING_DATA_PERIOD_MS	500
 
 // Mic sensitivity (https://www.dsprelated.com/showthread/audiodsp/1153-1.php).

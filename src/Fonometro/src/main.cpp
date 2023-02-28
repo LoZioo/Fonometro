@@ -1,6 +1,14 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+#include <DNSServer.h>
+#include <ESPmDNS.h>
+
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
+#include <LittleFS.h>
+
 // #include <fft.h>
 #include <AudioProcessor.h>
 
@@ -8,8 +16,8 @@
 #include <const.h>
 
 // Threads.
-void sample_thread(void*), main_thread(void*);
-TaskHandle_t sample_thread_handle, main_thread_handle;
+void sample_thread(void*), webserver_thread(void*);
+TaskHandle_t sample_thread_handle, webserver_thread_handle;
 
 #include <proc.h>
 
@@ -21,7 +29,10 @@ void setup(){
 	sound.begin();
 
 	setup_gpio();
-	// setup_wifi();
+	setup_wifi();
+
+	while(true)
+		delay(1000);
 
 	spawn_threads();
 }
@@ -35,8 +46,8 @@ void sample_thread(void *parameters){
 	}
 }
 
-void main_thread(void *parameters){
-	Serial.println("main_thread");
+void webserver_thread(void *parameters){
+	Serial.println("webserver_thread");
 
 	AudioProcessor_data_t data;
 	while(true){
