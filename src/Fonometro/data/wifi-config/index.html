@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="it">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title> Sound Meter Wi-Fi configuration </title>
+
+		<link rel="stylesheet" type="text/css" href="./css/index.css">
+	</head>
+
+	<body>
+		<div class="container">
+			<h1> Sound Meter </h1>
+			<p> Inserisci le credenziali della rete Wi-Fi </p>
+
+			<form method="post" action="/wifi-set">
+				<label for="ssid">SSID:</label>
+				<input type="text" id="ssid" name="ssid" required>
+
+				<label for="password">Password:</label>
+				<input type="password" id="pass" name="pass" required>
+
+				<input type="submit" value="Connetti">
+			</form>
+		</div>
+	</body>
+</html>
