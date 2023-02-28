@@ -45,9 +45,8 @@ class AudioProcessor {
 		AudioProcessor_data_t data;						// AudioProcessor::get return value.
 		float dc_offset = 2047;								// Knuth running mean (2047 is the expected DC value).
 
-		int32_t *buff32_int;			// Intended to save samples; range [-2048, 2047].
-		float *buff32_float;			// Intended to save SPL values; use the same allocated memory, but use it as float memory.
-		uint32_t buff32_len;
+		int16_t *samples;
+		uint32_t samples_len;
 
 		AudioProcessor();
 		void __read_adc_i2s_samples();
