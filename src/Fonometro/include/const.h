@@ -50,3 +50,13 @@ AudioProcessor_init_t AudioProcessor_init {
 	.preamp_gain =				9.2,
 	.mic_spl_conversion =	5.26799e-6	// Empyric value: you have to solve "20 * log10(READ_MIC_VOLTAGE_RMS / x) = REAL_DB_VALUE (from another audio meter)".
 };
+
+// Persistent settings.
+#define SETTINGS_FILE	"/settings.bin"
+
+typedef struct {
+	char ssid[16] = "STA_SSID";
+	char pass[16] = "STA_PSK";
+
+	uint32_t mqtt_broker_ip = 0;
+} settings_t;

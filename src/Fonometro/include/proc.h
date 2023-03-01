@@ -7,35 +7,10 @@ inline void setup_gpio(){
 	pinMode(MIC_4, INPUT);
 }
 
-// Spawn and handle the captive portal and then reset after the configuration.
-inline void handle_captive_portal(){
-	DNSServer dns;
-	AsyncWebServer server(WIFI_WEBSERVER_PORT);
-
-	dns.start(WIFI_DNS_PORT, "*", WIFI_AP_IP);
-	MDNS.begin(WIFI_AP_NAME);
-	LittleFS.begin();
-
-	server.on("/wifi-set", HTTP_POST, [](AsyncWebServerRequest *req){
-		Serial.printf("SSID: %s\nPassword: %s\n", req->arg("ssid").c_str(), req->arg("pass").c_str());
-		req->redirect("/index.html");
-	});
-
-	server.onNotFound([](AsyncWebServerRequest *req){
-		req->redirect("/index.html");
-	});
-
-	server.serveStatic("/", LittleFS, "/wifi-config/");
-	server.begin();
-
-	while(true)
-		dns.processNextRequest();
-}
-
-// Try to connect to WiFi, otherwise go into access point mode, wait to be configured and then reset.
-inline void setup_wifi(){
+// Try to connect to WiFi, otherwise go into access point mode; return true if WiFi is connected, else return false.
+bool setup_wifi(){
 	WiFi.mode(WIFI_STA);
-	WiFi.begin(STA_SSID, STA_PSK);
+	WiFi.begin(settings.ssid, settings.pass);
 
 	uint8_t attempts = 0;
 	while(WiFi.status() != WL_CONNECTED && attempts < WIFI_STA_CONNECTION_ATTEMPTS){
@@ -48,8 +23,10 @@ inline void setup_wifi(){
 		WiFi.softAP(WIFI_AP_NAME);
 		WiFi.softAPConfig(WIFI_AP_IP, WIFI_AP_IP, WIFI_AP_SUBNET);
 
-		handle_captive_portal();
+		return false;
 	}
+
+	return true;
 }
 
 // Spawn the needed threads and kill the spawner thread.
@@ -70,4 +47,47 @@ inline void spawn_threads(){
 
 	// Deleting the spawner thread (setup thread).
 	vTaskDelete(NULL);
+}
+
+inline void save_settings(){
+	File file = LittleFS.open(SETTINGS_FILE, "w");
+
+	file.write((uint8_t*) &settings, sizeof(settings));
+	file.close();
+}
+
+inline void load_settings(){
+	File file = LittleFS.open(SETTINGS_FILE, "r");
+
+	if(file){
+		file.read((uint8_t*) &settings, sizeof(settings));
+		file.close();
+	}
+}
+
+uint32_t ip_str_to_uint32(const char *ip){
+	if(strcmp(ip, "") == 0)
+		return 0;
+	
+	char tmp_ip[16];
+	strcpy(tmp_ip, ip);
+
+	char *octet = strtok(tmp_ip, ".");
+	uint32_t res = 0;
+
+	for(int i=0; i<4; i++){
+		res <<= 8;
+		res |= (uint8_t) atoi(octet);
+
+		octet = strtok(NULL, ".");
+	}
+
+	return res;
+}
+
+char* uint32_to_ip_str(uint32_t ip, char* buf){
+	uint8_t *octet = (uint8_t*) &ip;
+	sprintf(buf, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+
+	return buf;
 }
