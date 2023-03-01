@@ -1,24 +1,30 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+#include <LittleFS.h>
+
 #include <DNSServer.h>
 #include <ESPmDNS.h>
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-#include <LittleFS.h>
+#include <PubSubClient.h>
 
 // #include <fft.h>
 #include <AudioProcessor.h>
 #include <const.h>
 
 // Threads.
-void sample_thread(void*), webserver_thread(void*);
-TaskHandle_t sample_thread_handle, webserver_thread_handle;
+void sample_thread(void*), main_thread(void*);
+TaskHandle_t sample_thread_handle, main_thread_handle;
 
 // Global persistent settings.
 settings_t settings;
+
+// MQTT.
+WiFiClient mqtt_client;
+PubSubClient mqtt(mqtt_client);
 
 #include <proc.h>
 
@@ -35,6 +41,7 @@ void setup(){
 	load_settings();
 	wifi_connected = setup_wifi();
 
+	randomSeed(micros());
 	spawn_threads();
 }
 
@@ -47,10 +54,8 @@ void sample_thread(void *parameters){
 	}
 }
 
-void webserver_thread(void *parameters){
-	Serial.println("webserver_thread");
-	// AudioProcessor_data_t data;
-	// data = sound.get();
+void main_thread(void *parameters){
+	Serial.println("main_thread");
 
 	DNSServer *dns;
 	AsyncWebServer server(WIFI_WEBSERVER_PORT);
@@ -60,6 +65,9 @@ void webserver_thread(void *parameters){
 		dns->start(WIFI_DNS_PORT, "*", WIFI_AP_IP);
 		MDNS.begin(WIFI_AP_NAME);
 	}
+
+	else
+		setup_mqtt();
 
 	server.on("/wifi-set", HTTP_POST, [](AsyncWebServerRequest *req){
 		strcpy(settings.ssid, req->arg("ssid").c_str());
@@ -80,10 +88,49 @@ void webserver_thread(void *parameters){
 	server.serveStatic("/", LittleFS, "/wifi-config/");
 	server.begin();
 
+	// Non blocking timer.
+	uint64_t t0 = 0;
+
+	// Temp data.
+	AudioProcessor_data_t data;
+	char str[32];
+
 	while(true){
 		if(!wifi_connected)
 			dns->processNextRequest();
 
-		delay(1000);
+		else{
+			if(!mqtt.connected()){
+				// Create a random client ID.
+				String id = MQTT_NAME_PREFIX;
+				id += String(random(0xFFFF), HEX);
+
+				//Attempt to connect.
+				mqtt.connect(id.c_str());
+				delay(1000);
+			}
+
+			else{
+				if(millis() > t0){
+					data = sound.get();
+
+					sprintf(str, "%d", data.sample_dc_offset);
+					mqtt.publish(MQTT_SAMPLE_DC_OFFSET_TOPIC, str);
+
+					sprintf(str, "%.6e", data.adc_voltage_rms);
+					mqtt.publish(MQTT_ADC_VOLTAGE_RMS_TOPIC, str);
+
+					sprintf(str, "%.6e", data.mic_voltage_rms);
+					mqtt.publish(MQTT_MIC_VOLTAGE_RMS_TOPIC, str);
+
+					sprintf(str, "%d", data.db_spl);
+					mqtt.publish(MQTT_DB_SPL_TOPIC, str);
+
+					t0 = millis() + SENDING_DATA_PERIOD_MS;
+				}
+
+				mqtt.loop();
+			}
+		}
 	}
 }

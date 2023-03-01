@@ -28,6 +28,15 @@
 #define WIFI_AP_IP			IPAddress(8, 8, 8, 8)
 #define WIFI_AP_SUBNET	IPAddress(255, 255, 255, 0)
 
+// MQTT configurations.
+#define MQTT_PORT					1883
+#define MQTT_NAME_PREFIX	F("SoundMeter-Client-")
+
+#define MQTT_SAMPLE_DC_OFFSET_TOPIC		"/SoundMeter/sample_dc_offset"
+#define MQTT_ADC_VOLTAGE_RMS_TOPIC		"/SoundMeter/adc_voltage_rms"
+#define MQTT_MIC_VOLTAGE_RMS_TOPIC		"/SoundMeter/mic_voltage_rms"
+#define MQTT_DB_SPL_TOPIC							"/SoundMeter/db_spl"
+
 // AudioProcessor configurations.
 #define SENDING_DATA_PERIOD_MS	500
 
